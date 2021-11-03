@@ -26,6 +26,14 @@
     },
     {
       "method": "GET",
+      "path": "/user_application/:id",
+      "handler": "application.findOneByUser",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/user_applications",
       "handler": "application.findByUser",
       "config": {

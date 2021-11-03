@@ -25,11 +25,18 @@ module.exports = {
     const { user } = ctx.state
     console.log('user>>>', ctx.state.user.id);
     let entities;
-    if (ctx.query._q) {
-      entities = await strapi.services.subscription.search(ctx.query);
+    if (user.id) {
+      if (ctx.query._q) {
+        entities = await strapi.services.subscription.search(ctx.query);
+      } else {
+        console.log('ctx', ctx.query);
+        entities = await strapi.services.subscription.find({ 'user.id': user.id });
+      }
     } else {
-      console.log('ctx', ctx.query);
-      entities = await strapi.services.subscription.find({'user.id': user.id});
+      ctx.send({
+        status: false,
+        message: "You Can Not Perform This Action Because This Application Does Not belong to you"
+      });
     }
 
     return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.subscription }));

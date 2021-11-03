@@ -29,9 +29,38 @@ module.exports = {
     const { user } = ctx.state
     console.log('user>>>', ctx.state.user.id);
     let entities;
-    entities = await strapi.services.application.find({ 'user.id': user.id });
-
+    if (user.id) {
+      entities = await strapi.services.application.find({ 'user.id': user.id });
+    } else {
+      ctx.send({
+        status: false,
+        message: "You Can Not Perform This Action Because This Application Does Not belong to you"
+      });
+    }
     return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.application }));
+  },
+  async findOneByUser(ctx) {
+    const { id } = ctx.params;
+    const { user } = ctx.state
+    console.log('user>>>', ctx.state.user.id);
+    if (user.id) {
+      console.log(1);
+      const entity = await strapi.services.application.findOne({ id: id, 'user.id': user.id });
+      console.log(entity);
+      if (entity) {
+        return sanitizeEntity(entity, { model: strapi.models.application });
+      } else {
+        ctx.send({
+          status: false,
+          message: "You Can Not Perform This Action Because This Application Does Not belong to you"
+        });
+      }
+    } else {
+      ctx.send({
+        status: false,
+        message: "User Not Found"
+      });
+    }
   },
   async update(ctx) {
     const { id } = ctx.params;
