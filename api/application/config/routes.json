@@ -1,0 +1,76 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/applications",
+      "handler": "application.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/applications/count",
+      "handler": "application.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/applications/:id",
+      "handler": "application.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/user_applications",
+      "handler": "application.findByUser",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/application/subscription/:id",
+      "handler": "application.getSubscriptionByApplication",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/application/subscription/:id",
+      "handler": "application.updateSubscriptionByApplication",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/applications",
+      "handler": "application.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/applications/:id",
+      "handler": "application.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/applications/:id",
+      "handler": "application.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

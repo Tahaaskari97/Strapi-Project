@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subscriptions",
+  "info": {
+    "name": "Subscription",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "plan": {
+      "model": "plan",
+      "via": "subscriptions"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "application": {
+      "via": "subscriptions",
+      "model": "application"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "subscriptions"
+    }
+  }
+}
