@@ -13,7 +13,12 @@ module.exports = {
     console.log('user>>>', user.id);
     let entity;
 
-    entity = await strapi.services.application.create({ ...ctx.request.body, user: user.id });
+    if (ctx.is('multipart')) {
+      const { data, files } = parseMultipartData(ctx);
+      entity = await strapi.services.application.create({ ...data, user: user.id }, { files });
+    } else {
+      entity = await strapi.services.application.create({ ...ctx.request.body, user: user.id });
+    }
     await strapi.services.subscription.create({ plan: 1, active: true, application: entity.id, user: user.id });
 
     console.log(entity.id);
@@ -24,12 +29,7 @@ module.exports = {
     const { user } = ctx.state
     console.log('user>>>', ctx.state.user.id);
     let entities;
-    if (ctx.query._q) {
-      entities = await strapi.services.application.search(ctx.query);
-    } else {
-      console.log('ctx', ctx.query);
-      entities = await strapi.services.application.find({ 'user.id': user.id });
-    }
+    entities = await strapi.services.application.find({ 'user.id': user.id });
 
     return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.application }));
   },
@@ -44,9 +44,19 @@ module.exports = {
 
     console.log('response.user.id', response.user.id);
     if (response.user.id === user.id) {
-      entity = await strapi.services.application.update({ id }, ctx.request.body);
+      if (ctx.is('multipart')) {
+        const { data, files } = parseMultipartData(ctx);
+        entity = await strapi.services.application.update({ id }, data, {
+          files,
+        });
+      } else {
+        entity = await strapi.services.application.update({ id }, ctx.request.body);
+      }
     } else {
-      throw new Error("This Application Does Not belong to you");
+      ctx.send({
+        status: false,
+        message: "This Application Does Not belong to you"
+      });
     }
 
     return sanitizeEntity(response, { model: strapi.models.application });
@@ -62,7 +72,10 @@ module.exports = {
     if (response.user.id === user.id) {
       entity = await strapi.services.application.delete({ id });
     } else {
-      throw new Error("This Application Does Not belong to you");
+      ctx.send({
+        status: false,
+        message: "This Application Does Not belong to you"
+      });
     }
     return sanitizeEntity(entity, { model: strapi.models.application });
   },
@@ -75,7 +88,7 @@ module.exports = {
     } else {
       ctx.send({
         status: false,
-        message: "This Application Does Not belong to you"
+        message: "Application Not Found"
       });
     }
   },
@@ -89,15 +102,19 @@ module.exports = {
     response = await strapi.services.subscription.findOne({ "application.id": id });
 
     console.log('response.user.id', response.application.id);
-    // return sanitizeEntity(response, { model: strapi.models.application });
-
-    // return
     if (response.user.id === user.id) {
-      entity = await strapi.services.subscription.update({ "application": id }, { ...ctx.request.body, application: id, user: user.id });
+      if (ctx.is('multipart')) {
+        const { data, files } = parseMultipartData(ctx);
+        entity = await strapi.services.application.update({ "application": id }, { ...data, application: id, user: user.id }, {
+          files,
+        });
+      } else {
+        entity = await strapi.services.subscription.update({ "application": id }, { ...ctx.request.body, application: id, user: user.id });
+      }
     } else {
       ctx.send({
         status: false,
-        message: "This Application Does Not belong to you"
+        message: "Application Not Found"
       });
     }
 

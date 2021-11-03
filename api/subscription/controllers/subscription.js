@@ -14,9 +14,6 @@ module.exports = {
     if (ctx.query._q) {
       entities = await strapi.services.subscription.search(ctx.query);
     } else {
-      // query = {
-      //   user: user.id
-      // }
       console.log('ctx', ctx.query);
       entities = await strapi.services.subscription.find(user.id);
     }
@@ -63,10 +60,17 @@ module.exports = {
     const { id } = ctx.params;
     const { user } = ctx.state
 
-    let entity;
-    console.log('else condition', ctx);
-    entity = await strapi.services.subscription.update({ id }, { active: false });
-    // entity = await strapi.services.subscription.update({ id }, ctx.request.body);
+    let entity, response;
+
+    response = await strapi.services.subscription.findOne({ id });
+    if (response.user.id === user.id) {
+      entity = await strapi.services.subscription.update({ id }, { active: false });
+    } else {
+      ctx.send({
+        status: false,
+        message: "You Can Not Cancel Subscription Because This Application Does Not belong to you"
+      });
+    }
 
     return sanitizeEntity(entity, { model: strapi.models.subscription });
   }
